@@ -1,11 +1,44 @@
-import { StyleSheet, Text, View } from 'react-native'
-import React from 'react'
+import { StyleSheet, Text, View , ScrollView} from 'react-native'
+import React, { useContext, useState, useEffect } from 'react'
+import { UserType } from '../UserContext';
+import { useNavigation } from '@react-navigation/native';
+import { Pressable } from 'react-native';
+import UserChat from '../components/UserChat';
 
 const ChatsScreen = () => {
+    const [acceptedFriends, setacceptedFriends] = useState([]);
+    const { userId, setUserId } = useContext(UserType);
+    const navigation = useNavigation();
+
+    useEffect(() => {
+      const acceptedFriendsList = async () => {
+        try {
+            const response = await fetch(`http://192.168.1.3:8000/accepted-friends/${userId}`);
+            const data = await response.json();
+
+            if(response.ok){
+                setacceptedFriends(data);
+            }
+        } catch (error) {
+            console.log("Error showing the accepted friends",error);
+
+        }
+      };
+
+      acceptedFriendsList();
+    }, [])
+
+    console.log("Friends", acceptedFriends)
+    
+
   return (
-    <View>
-      <Text>ChatsScreen</Text>
-    </View>
+    <ScrollView showsVerticalScrollIndicator={false}>
+      <Pressable>
+        {acceptedFriends.map((item, index) => (
+            <UserChat key={index} item={item}/>
+        ))}
+      </Pressable>
+    </ScrollView>
   )
 }
 

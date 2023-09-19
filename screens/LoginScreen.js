@@ -12,7 +12,7 @@ const LoginScreen = () => {
   const [password, setPassword] = useState("");
   const navigation = useNavigation();
 
-  /* useEffect(() => {
+  useEffect(() => {
     const checkLoginStatus = async () => {
       try {
         const token = await AsyncStorage.getItem("authToken");
@@ -29,7 +29,7 @@ const LoginScreen = () => {
 
     checkLoginStatus();
   }, []);
- */
+
   const handleLogin = () => {
     const user = {
       email: email,

@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View } from "react-native";
+import { StyleSheet, Text, View, TouchableOpacity } from "react-native";
 import React, { useContext, useEffect, useLayoutEffect, useState } from "react";
 import { useNavigation } from "@react-navigation/native";
 import { Ionicons } from "@expo/vector-icons";
@@ -12,6 +12,19 @@ const HomeScreen = () => {
   const navigation = useNavigation();
   const { userId, setUserId } = useContext(UserType);
   const [users, setUsers] = useState([]);
+
+  // Logout function
+  const handleLogout = async () => {
+    try {
+      // Clear authentication token
+      await AsyncStorage.removeItem("authToken");
+
+      // Navigate back to the login screen
+      navigation.replace("Login"); // You can use navigation.navigate() if you want to allow going back to the previous screen
+    } catch (error) {
+      console.log("Error logging out:", error);
+    }
+  };
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -33,6 +46,14 @@ const HomeScreen = () => {
             color="black"
             style={{ marginLeft: 15 }}
           />
+           <TouchableOpacity onPress={handleLogout}>
+            <Ionicons
+              name="log-out-outline"
+              size={24}
+              color="black"
+              style={{ marginLeft: 15 }}
+            />
+          </TouchableOpacity>
         </View>
       ),
     });

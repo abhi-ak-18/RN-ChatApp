@@ -3,6 +3,7 @@ const bodyParser = require("body-parser");
 const { default: mongoose } = require("mongoose");
 const passport = require("passport");
 const LocalStrategy = require("passport-local").Strategy;
+const path = require("path");
 
 const app = express();
 const port = 8000;
@@ -15,7 +16,7 @@ app.use(passport.initialize());
 const jwt = require("jsonwebtoken");
 
 mongoose
-  .connect("mongodb+srv://jodduser:jodduser@cluster0.hd4qsmk.mongodb.net/", {
+  .connect("mongodb+srv://jodduser:<Password_here>@cluster0.hd4qsmk.mongodb.net/", {
     useNewUrlParser: true,
     useUnifiedTopology: true,
   })
@@ -29,9 +30,14 @@ mongoose
 app.listen(port, () => {
   console.log(`Server running on port ${port}`);
 });
+//testing
+// Define a route to serve static files from the "files/" directory
+app.use("/files", express.static(path.join(__dirname, "files")));
 
+//testing-end
 const User = require("./models/user");
 const Message = require("./models/message");
+const multer = require("multer");
 
 //function to create a token for the user
 const createToken = (userId) => {
@@ -176,6 +182,155 @@ app.post("/accept-friend-request", async (req, res) => {
     res.status(200).json({ message: "Friend req accepted successfully!" });
   } catch (error) {
     console.log("Error accepting friend request", error);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+});
+
+//endpoint to access all the friends of the logged in user
+app.get("/accepted-friends/:userId", async (req, res) => {
+  try {
+    const { userId } = req.params;
+    const user = await User.findById(userId).populate(
+      "friends",
+      "name email image"
+    );
+    const acceptedFriends = user.friends;
+    res.json(acceptedFriends);
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+});
+
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    // Define the directory where uploaded files will be stored
+    cb(null, "files/");
+  },
+  filename: function (req, file, cb) {
+    // Define how uploaded files will be named
+    cb(null, Date.now() + "-" + file.originalname);
+  },
+});
+
+const upload = multer({ storage: storage });
+
+//endpoint to post messages and store it on the backend
+app.post("/messages", upload.single("imageFile"), async (req, res) => {
+  try {
+    const { senderId, recipientId, messageType, messageText } = req.body;
+
+    const newMessage = new Message({
+      senderId,
+      recipientId,
+      messageType,
+      message: messageText,
+      timeStamp: new Date(),
+      imageUrl:
+        messageType === "image" ? req.file.path.replace(/\\/g, "/") : null,
+    });
+
+    await newMessage.save();
+
+    res.status(200).json({ message: "Message sent succesfully" });
+  } catch (error) {
+    console.log("Error on file upload", error);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+});
+
+//endpoint to ge the userDetails to design the chat room header
+
+app.get("/user-details/:userId", async (req, res) => {
+  try {
+    const { userId } = req.params;
+
+    //fetch the user data from the user id
+    const recepientId = await User.findById(userId); /* .populate(
+      "friends",
+      "name email image"
+    ); */
+    res.json(recepientId);
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+});
+
+//endpoint to get all the messages between two users in the chat room
+
+app.get("/messages/:senderId/:recipientId", async (req, res) => {
+  try {
+    const { senderId, recipientId } = req.params;
+
+    //fetch the user data from the user id
+    const messages = await Message.find({
+      $or: [
+        { senderId, recipientId },
+        { senderId: recipientId, recipientId: senderId },
+      ],
+    })
+      .populate("senderId", "name _id")
+      .lean();
+
+    res.json(messages);
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+});
+
+//endpoint to deleete the messages
+
+app.post("/deleteMessages", async (req, res) => {
+  try {
+    const { messages } = req.body;
+
+    if (!Array.isArray(messages) || messages.length === 0) {
+      return res.status(400).json({ message: "Invalid req body!" });
+    }
+
+    await Message.deleteMany({ _id: { $in: messages } });
+
+    res.json({ message: "Message deleted successfully!" });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+});
+
+//endpoint to fetch the sent friend requests of a particular user
+app.get("/friend-requests/sent/:userId", async (req, res) => {
+  try {
+    const { userId } = req.params;
+    const user = await User.findById(userId)
+      .populate("sentFriendRequests", "name email image")
+      .lean();
+
+    const sentFriendRequests = user.sentFriendRequests;
+    res.json(sentFriendRequests);
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+});
+
+//endpoint to fetch the friends of a particular user
+app.get("/friends/:userId", (req, res) => {
+  try {
+    const { userId } = req.params;
+    User.findById(userId)
+      .populate("friends")
+      .then((user) => {
+        if (!user) {
+          return res.status(404).json({ message: "User not found" });
+        }
+        const friendIds = user.friends.map((friend) => friend._id);
+
+        res.status(200).json(friendIds);
+      });
+  } catch (error) {
+    console.log(error);
     res.status(500).json({ message: "Internal Server Error" });
   }
 });
