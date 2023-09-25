@@ -16,7 +16,7 @@ app.use(passport.initialize());
 const jwt = require("jsonwebtoken");
 
 mongoose
-  .connect("mongodb+srv://jodduser:<Password_here>@cluster0.hd4qsmk.mongodb.net/", {
+  .connect("mongodb+srv://jodduser:jodduser@cluster0.hd4qsmk.mongodb.net/", {
     useNewUrlParser: true,
     useUnifiedTopology: true,
   })
@@ -114,6 +114,27 @@ app.get("/users/:userId", (req, res) => {
       res.status(500).json({ message: "error retrieving users" });
     });
 });
+
+// A new endpoint to fetch the username of the currently logged-in user
+app.get("/username/:userId", async (req, res) => {
+    try {
+      const { userId } = req.params;
+  
+      // Fetch the user data from the user ID and return the username
+      const user = await User.findById(userId).lean();
+  
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+  
+      const username = user.name;
+      res.status(200).json({ username });
+    } catch (error) {
+      console.log(error);
+      res.status(500).json({ message: "Internal Server Error" });
+    }
+  });
+  
 
 //endpoint to send a request to a user
 app.post("/friend-request", async (req, res) => {

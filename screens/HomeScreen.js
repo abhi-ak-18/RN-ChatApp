@@ -12,6 +12,7 @@ const HomeScreen = () => {
   const navigation = useNavigation();
   const { userId, setUserId } = useContext(UserType);
   const [users, setUsers] = useState([]);
+  const [username, setUsername] = useState("");
 
   // Logout function
   const handleLogout = async () => {
@@ -38,15 +39,20 @@ const HomeScreen = () => {
       ),
       headerRight: () => (
         <View style={{ marginRight: 20, flexDirection: "row" }}>
-          <Ionicons onPress={() => navigation.navigate("Chats")} name="chatbubbles-outline" size={24} color="black" />
           <Ionicons
-          onPress={() => navigation.navigate("Friends")}
+            onPress={() => navigation.navigate("Chats")}
+            name="chatbubbles-outline"
+            size={24}
+            color="black"
+          />
+          <Ionicons
+            onPress={() => navigation.navigate("Friends")}
             name="people-outline"
             size={24}
             color="black"
             style={{ marginLeft: 15 }}
           />
-           <TouchableOpacity onPress={handleLogout}>
+          <TouchableOpacity onPress={handleLogout}>
             <Ionicons
               name="log-out-outline"
               size={24}
@@ -66,6 +72,20 @@ const HomeScreen = () => {
       const userId = decodedToken.userId;
       setUserId(userId);
 
+      // Fetch the username separately
+      axios
+        .get(`http://192.168.1.3:8000/username/${userId}`)
+        .then((response) => {
+          const { username } = response.data;
+          console.log("fetched username", username);
+          if (username) {
+            setUsername(username);
+          }
+        })
+        .catch((error) => {
+          console.log("Error retrieving username", error);
+        });
+
       axios
         .get(`http://192.168.1.3:8000/users/${userId}`)
         .then((response) => {
@@ -78,19 +98,21 @@ const HomeScreen = () => {
 
     fetchUsers();
   }, []);
-  console.log("Users:", users)
+  console.log("Users:", users);
 
   return (
     <View>
-        <View style={{padding:10}}>
-            {users.map((item, index) => (
-                <User key={index} item={item}/>
-            ))}
-        </View>
+    <View style={{ padding: 10 }}>
+      <Text style={{ fontSize: 20, fontWeight: "bold", textAlign: "center", marginBottom:20 }}>
+        Welcome, {username}!
+      </Text>
+      {users.map((item, index) => (
+        <User key={index} item={item} />
+      ))}
     </View>
-  );
+  </View>
+);
 };
-
 export default HomeScreen;
 
 const styles = StyleSheet.create({});
