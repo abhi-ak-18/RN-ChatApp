@@ -74,7 +74,7 @@ const HomeScreen = () => {
 
       // Fetch the username separately
       axios
-        .get(`http://192.168.1.3:8000/username/${userId}`)
+        .get(`https://rn-chatapp.onrender.com/username/${userId}`)
         .then((response) => {
           const { username } = response.data;
           console.log("fetched username", username);
@@ -87,7 +87,7 @@ const HomeScreen = () => {
         });
 
       axios
-        .get(`http://192.168.1.3:8000/users/${userId}`)
+        .get(`https://rn-chatapp.onrender.com/users/${userId}`)
         .then((response) => {
           setUsers(response.data);
         })

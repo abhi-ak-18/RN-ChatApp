@@ -37,7 +37,7 @@ const LoginScreen = () => {
     };
 
     axios
-      .post("http://192.168.1.3:8000/login", user)
+      .post("https://rn-chatapp.onrender.com/login", user)
       .then((response) => {
         console.log(response);
         const token = response.data.token;

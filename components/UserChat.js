@@ -15,7 +15,7 @@ const UserChat = ({ item }) => {
       /* console.log(recipientId);
           console.log(userId); */
       const response = await fetch(
-        `http://192.168.1.3:8000/messages/${userId}/${item._id}`
+        `https://rn-chatapp.onrender.com/messages/${userId}/${item._id}`
       );
       const data = await response.json();
 
