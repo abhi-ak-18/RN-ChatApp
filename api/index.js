@@ -22,7 +22,7 @@ const defaultUserImage =
   "https://img.freepik.com/free-psd/3d-illustration-person-with-sunglasses_23-2149436188.jpg?w=740&t=st=1695743723~exp=1695744323~hmac=4d6be87de3922dfabc655661c703e64977a02e24c03ae41905cd99a8d9114c0f";
 
 mongoose
-  .connect("mongodb+srv://jodduser:<password_here>cluster0.hd4qsmk.mongodb.net/", {
+  .connect("mongodb+srv://jodduser:jodduser@cluster0.hd4qsmk.mongodb.net/", {
     useNewUrlParser: true,
     useUnifiedTopology: true,
   })
