@@ -6,6 +6,9 @@ import { Pressable, Alert } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import axios from "axios";
 
+const defaultUserImage =
+  "https://img.freepik.com/free-psd/3d-illustration-person-with-sunglasses_23-2149436188.jpg?w=740&t=st=1695743723~exp=1695744323~hmac=4d6be87de3922dfabc655661c703e64977a02e24c03ae41905cd99a8d9114c0f";
+
 const RegisterScreen = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -13,15 +16,22 @@ const RegisterScreen = () => {
   const [image, setImage] = useState("");
   const navigation = useNavigation();
   const handleRegister = () => {
+    if (!image) {
+      // Set image to the default URL if it's empty
+      setImage(defaultUserImage);
+    }
+
+    console.log("image->",image)
+  
     const user = {
       name: name,
       email: email,
       password: password,
-      image: image,
+      image: image || defaultUserImage,
     };
 
     //Send a POST req to backend APi to register the user
-    axios.post("https://rn-chatapp.onrender.com/register", user)
+    axios.post("http://192.168.1.3:8000/register", user)
       .then((response) => {
         console.log(response);
         Alert.alert(
@@ -31,7 +41,7 @@ const RegisterScreen = () => {
         setName("");
         setEmail("");
         setPassword("");
-        setImage("");
+        setImage(defaultUserImage);
       })
       .catch((err) => {
         Alert.alert("Registration Error", "Please try again");

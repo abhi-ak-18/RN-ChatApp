@@ -15,7 +15,7 @@ const FriendsScreen = () => {
   const fetchFriendRequests = async () => {
     try {
       const response = await axios.get(
-        `https://rn-chatapp.onrender.com/friend-request/${userId}`
+        `http://192.168.1.3:8000/friend-request/${userId}`
       );
       if (response.status === 200) {
         const friendRequestsData = response.data.map((friendRequest) => ({

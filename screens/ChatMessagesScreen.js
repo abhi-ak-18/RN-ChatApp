@@ -55,7 +55,7 @@ const ChatMessagesScreen = () => {
       /* console.log(recipientId);
       console.log(userId); */
       const response = await fetch(
-        `https://rn-chatapp.onrender.com/messages/${userId}/${recipientId}`
+        `http://192.168.1.3:8000/messages/${userId}/${recipientId}`
       );
       const data = await response.json();
 
@@ -78,7 +78,7 @@ const ChatMessagesScreen = () => {
       try {
         /* console.log(recipientId) */
         const response = await fetch(
-          `https://rn-chatapp.onrender.com/user-details/${recipientId}`
+          `http://192.168.1.3:8000/user-details/${recipientId}`
         );
 
         const data = await response.json();
@@ -111,7 +111,7 @@ const ChatMessagesScreen = () => {
         formData.append("messageText", message);
       }
 
-      const response = await fetch("https://rn-chatapp.onrender.com/messages", {
+      const response = await fetch("http://192.168.1.3:8000/messages", {
         method: "POST",
         body: formData,
       });
@@ -185,7 +185,7 @@ const ChatMessagesScreen = () => {
 
   const deleteMessages = async (messageIds) => {
     try {
-      const response = await fetch("https://rn-chatapp.onrender.com/deleteMessages", {
+      const response = await fetch("http://192.168.1.3:8000/deleteMessages", {
         method: "POST",
         body: JSON.stringify({messages: messageIds}),
         headers: {
@@ -269,10 +269,11 @@ const ChatMessagesScreen = () => {
                         margin: 10,
                         maxWidth: "60%",
                         borderRadius: 7,
+        
                       }
                     : {
                         alignSelf: "flex-start",
-                        backgroundColor: "white",
+                        backgroundColor: "#D3D3D3",
                         padding: 8,
                         margin: 10,
                         maxWidth: "60%",
@@ -305,7 +306,7 @@ const ChatMessagesScreen = () => {
           }
 
           if (item.messageType === "image") {
-            const baseUrl = "https://rn-chatapp.onrender.com/";
+            const baseUrl = "http://192.168.1.3:8000/";
             const imageUrl = baseUrl + item.imageUrl;
             /* console.log("Image url",imageUrl); */
 

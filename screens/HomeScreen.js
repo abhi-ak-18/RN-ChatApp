@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, TouchableOpacity } from "react-native";
+import { StyleSheet, Text, View, TouchableOpacity, Image } from "react-native";
 import React, { useContext, useEffect, useLayoutEffect, useState } from "react";
 import { useNavigation } from "@react-navigation/native";
 import { Ionicons } from "@expo/vector-icons";
@@ -8,11 +8,14 @@ import jwt_decode from "jwt-decode";
 import axios from "axios";
 import User from "../components/User";
 
+
+
 const HomeScreen = () => {
   const navigation = useNavigation();
   const { userId, setUserId } = useContext(UserType);
   const [users, setUsers] = useState([]);
   const [username, setUsername] = useState("");
+  const [userImage, setUserImage] = useState("");
 
   // Logout function
   const handleLogout = async () => {
@@ -74,7 +77,7 @@ const HomeScreen = () => {
 
       // Fetch the username separately
       axios
-        .get(`https://rn-chatapp.onrender.com/username/${userId}`)
+        .get(`http://192.168.1.3:8000/username/${userId}`)
         .then((response) => {
           const { username } = response.data;
           console.log("fetched username", username);
@@ -87,12 +90,24 @@ const HomeScreen = () => {
         });
 
       axios
-        .get(`https://rn-chatapp.onrender.com/users/${userId}`)
+        .get(`http://192.168.1.3:8000/users/${userId}`)
         .then((response) => {
           setUsers(response.data);
         })
         .catch((error) => {
           console.log("Error retrieving users", error);
+        });
+
+      // Fetch the user's image
+      axios
+        .get(`http://192.168.1.3:8000/user-image/${userId}`)
+        .then((response) => {
+          const { userImage } = response.data;
+          /* console.log("Userimage->", userImage) */
+          setUserImage(userImage);
+        })
+        .catch((error) => {
+          console.log("Error retrieving user image", error);
         });
     };
 
@@ -101,18 +116,57 @@ const HomeScreen = () => {
   console.log("Users:", users);
 
   return (
-    <View>
     <View style={{ padding: 10 }}>
-      <Text style={{ fontSize: 20, fontWeight: "bold", textAlign: "center", marginBottom:20 }}>
-        Welcome, {username}!
-      </Text>
+      <View style={styles.headerContainer}>
+      {userImage ? (
+          <Image source={{ uri: userImage }} style={styles.userImage} />
+        ) : (
+          <View style={styles.userImagePlaceholder}>
+            <Text style={styles.userImagePlaceholderText}>No Image</Text>
+          </View>
+        )}
+        <Text style={styles.welcomeText}>Welcome, {username}!</Text>
+      </View>
       {users.map((item, index) => (
         <User key={index} item={item} />
       ))}
     </View>
-  </View>
-);
+  );
 };
 export default HomeScreen;
 
-const styles = StyleSheet.create({});
+const styles = StyleSheet.create({
+  headerContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    padding: 10,
+  },
+  userImage: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    marginRight: 10,
+    marginLeft: 30,
+  },
+  welcomeText: {
+    fontSize: 20,
+    fontWeight: "bold",
+    marginBottom: 20,
+    marginTop: 15,
+  },
+  userImagePlaceholder: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    marginRight: 10,
+    marginLeft: 30,
+    backgroundColor: 'gray',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  userImagePlaceholderText: {
+    color: 'white',
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+});
