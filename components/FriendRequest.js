@@ -11,7 +11,7 @@ const FriendRequest = ({item, friendRequests, setFriendRequests}) => {
     const acceptRequest = async (friendRequestId) => {
 
         try {
-            const response = await fetch("http://192.168.1.3:8000/accept-friend-request", {
+            const response = await fetch("https://rn-chatapp.onrender.com/accept-friend-request", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"

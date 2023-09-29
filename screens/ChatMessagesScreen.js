@@ -55,7 +55,7 @@ const ChatMessagesScreen = () => {
       /* console.log(recipientId);
       console.log(userId); */
       const response = await fetch(
-        `http://192.168.1.3:8000/messages/${userId}/${recipientId}`
+        `https://rn-chatapp.onrender.com/messages/${userId}/${recipientId}`
       );
       const data = await response.json();
 
@@ -78,7 +78,7 @@ const ChatMessagesScreen = () => {
       try {
         /* console.log(recipientId) */
         const response = await fetch(
-          `http://192.168.1.3:8000/user-details/${recipientId}`
+          `https://rn-chatapp.onrender.com/user-details/${recipientId}`
         );
 
         const data = await response.json();
@@ -111,7 +111,7 @@ const ChatMessagesScreen = () => {
         formData.append("messageText", message);
       }
 
-      const response = await fetch("http://192.168.1.3:8000/messages", {
+      const response = await fetch("https://rn-chatapp.onrender.com/messages", {
         method: "POST",
         body: formData,
       });
@@ -185,7 +185,7 @@ const ChatMessagesScreen = () => {
 
   const deleteMessages = async (messageIds) => {
     try {
-      const response = await fetch("http://192.168.1.3:8000/deleteMessages", {
+      const response = await fetch("https://rn-chatapp.onrender.com/deleteMessages", {
         method: "POST",
         body: JSON.stringify({messages: messageIds}),
         headers: {
@@ -306,7 +306,7 @@ const ChatMessagesScreen = () => {
           }
 
           if (item.messageType === "image") {
-            const baseUrl = "http://192.168.1.3:8000/";
+            const baseUrl = "https://rn-chatapp.onrender.com/";
             const imageUrl = baseUrl + item.imageUrl;
             /* console.log("Image url",imageUrl); */
 

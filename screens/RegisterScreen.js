@@ -31,7 +31,7 @@ const RegisterScreen = () => {
     };
 
     //Send a POST req to backend APi to register the user
-    axios.post("http://192.168.1.3:8000/register", user)
+    axios.post("https://rn-chatapp.onrender.com/register", user)
       .then((response) => {
         console.log(response);
         Alert.alert(
